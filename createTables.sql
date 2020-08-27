@@ -109,7 +109,8 @@ varaustyyppi TEXT CHECK (varaustyyppi IN ('Luento','Tentti','Harjoitus')),
 alkuAika TEXT NOT NULL,
 loppuAika TEXT NOT NULL,
 saliID TEXT NOT NULL,
-FOREIGN KEY (saliID) REFERENCES Sali(saliID)
+FOREIGN KEY (saliID) REFERENCES Sali(saliID),
+UNIQUE(alkuAika,saliID)
 );
 
 CREATE TABLE VarattuLuennolle (
@@ -131,7 +132,6 @@ PRIMARY KEY (varausNumero, kurssikoodi, tenttiAika),
 FOREIGN KEY (varausNumero) REFERENCES Varaus(varausNumero)
 ON DELETE CASCADE,
 FOREIGN KEY (kurssikoodi, tenttiAika) REFERENCES Tentti(kurssikoodi, tenttiAika)
-
 );
 
 CREATE TABLE VarattuHarjoitusRyhmälle (

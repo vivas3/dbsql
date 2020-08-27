@@ -2,21 +2,21 @@ CREATE TABLE Opiskelija (
 opiskelijaNumero INTEGER PRIMARY KEY NOT NULL,
 nimi TEXT NOT NULL,
 syntynyt TEXT NOT NULL,
-tutkintoOhjelma TEXT,
-otettuKirjoille TEXT,
-opiskeluOikeusPäättyy TEXT
+tutkintoOhjelma TEXT NOT NULL,
+otettuKirjoille TEXT NOT NULL,
+opiskeluOikeusPäättyy TEXT NOT NULL
 );
 
 CREATE TABLE IlmoittautunutRyhmään (
-harjoitusRyhmä TEXT REFERENCES Harjoitus(harjoitusRyhmä),
-opiskelijaNumero INTEGER REFERENCES Opiskelija(opiskelijaNumero),
+harjoitusRyhmä TEXT REFERENCES Harjoitus(harjoitusRyhmä) NOT NULL,
+opiskelijaNumero INTEGER REFERENCES Opiskelija(opiskelijaNumero) NOT NULL,
 PRIMARY KEY (harjoitusRyhmä, opiskelijaNumero)
 );
 
 CREATE TABLE IlmoittautunutTenttiin (
-kurssikoodi TEXT,
-tenttiAika TEXT,
-opiskelijaNumero INTEGER,
+kurssikoodi TEXT NOT NULL,
+tenttiAika TEXT NOT NULL,
+opiskelijaNumero INTEGER NOT NULL,
 PRIMARY KEY (kurssikoodi, tenttiAika, opiskelijaNumero),
 FOREIGN KEY (kurssikoodi, tenttiAika) REFERENCES Tentti(kurssikoodi, tenttiAika),
 FOREIGN KEY (opiskelijaNumero) REFERENCES Opiskelija(opiskelijaNumero)
@@ -31,18 +31,18 @@ CREATE TABLE Sali (
 saliID TEXT PRIMARY KEY NOT NULL,
 paikkoja INTEGER,
 tenttiPaikkoja INTEGER,
-rakennuksenNimi TEXT,
+rakennuksenNimi TEXT NOT NULL,
 FOREIGN KEY (rakennuksenNimi) REFERENCES Rakennus(nimi)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE Varuste (
-varustetunniste TEXT PRIMARY KEY
+varustetunniste TEXT PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE SisältääVarusteen (
-saliID TEXT REFERENCES Sali(saliID),
-varusteTunniste TEXT REFERENCES Varuste(varusteTunniste),
+saliID TEXT NOT NULL REFERENCES Sali(saliID),
+varusteTunniste TEXT NOT NULL REFERENCES Varuste(varusteTunniste),
 lukumäärä INTEGER,
 PRIMARY KEY (saliID, varusteTunniste)
 );
@@ -54,17 +54,17 @@ opintopisteet INTEGER
 );
 
 CREATE TABLE Toteutuskerta (
-kurssikoodi TEXT,
+kurssikoodi TEXT NOT NULL,
 opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ),
-lukukausi TEXT,
+lukukausi TEXT NOT NULL,
 PRIMARY KEY (kurssikoodi, opintojakso, lukukausi),
 FOREIGN KEY (kurssikoodi) REFERENCES Kurssi(kurssikoodi)
 ON DELETE CASCADE
 );
 
 CREATE TABLE Tentti (
-kurssikoodi TEXT,
-tenttiaika TEXT,
+kurssikoodi TEXT NOT NULL,
+tenttiaika TEXT NOT NULL,
 tentinKesto TEXT,
 ilmoittautuneita INTEGER DEFAULT 0,
 PRIMARY KEY (kurssiKoodi, tenttiAika),
@@ -73,10 +73,10 @@ ON DELETE CASCADE
 );
 
 CREATE TABLE Luento (
-kurssikoodi TEXT,
-opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ),
-lukukausi TEXT,
-luentoAika TEXT,
+kurssikoodi TEXT NOT NULL,
+opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ) NOT NULL,
+lukukausi TEXT NOT NULL,
+luentoAika TEXT NOT NULL,
 luennonKesto TEXT,
 PRIMARY KEY (kurssikoodi, opintojakso, lukukausi, luentoAika),
 FOREIGN KEY (kurssikoodi, opintojakso, lukukausi) REFERENCES Toteutuskerta(kurssikoodi, opintojakso, lukukausi)
@@ -85,9 +85,9 @@ ON DELETE CASCADE
 
 CREATE TABLE Harjoitus (
 harjoitusRyhmä TEXT PRIMARY KEY NOT NULL,
-kurssikoodi TEXT,
-opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ),
-lukukausi TEXT,
+kurssikoodi TEXT NOT NULL,
+opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ) NOT NULL,
+lukukausi TEXT NOT NULL,
 maxOsallistujat INTEGER,
 ilmoittautuneita INTEGER DEFAULT 0,
 harjoituksenKesto TEXT,
@@ -96,8 +96,8 @@ ON DELETE CASCADE
 );
 
 CREATE TABLE HarjoitusAika (
-kokoontumisAika TEXT,
-harjoitusRyhmä TEXT,
+kokoontumisAika TEXT NOT NULL,
+harjoitusRyhmä TEXT NOT NULL,
 PRIMARY KEY (kokoontumisAika, harjoitusRyhmä),
 FOREIGN KEY (harjoitusRyhmä) REFERENCES Harjoitus(harjoitusRyhmä)
 ON DELETE CASCADE
@@ -106,27 +106,27 @@ ON DELETE CASCADE
 CREATE TABLE Varaus (
 varausNumero INTEGER PRIMARY KEY NOT NULL,
 varaustyyppi TEXT CHECK (varaustyyppi IN ('Luento','Tentti','Harjoitus')),
-alkuAika TEXT,
-loppuAika TEXT,
-saliID TEXT,
+alkuAika TEXT NOT NULL,
+loppuAika TEXT NOT NULL,
+saliID TEXT NOT NULL,
 FOREIGN KEY (saliID) REFERENCES Sali(saliID)
 );
 
 CREATE TABLE VarattuLuennolle (
-varausNumero INTEGER PRIMARY KEY,
-kurssikoodi TEXT,
-opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ),
-lukukausi INTEGER,
-luentoaika TEXT,
+varausNumero INTEGER PRIMARY KEY NOT NULL,
+kurssikoodi TEXT NOT NULL,
+opintojakso INTEGER CHECK (opintojakso >= 0 AND opintojakso < 6 ) NOT NULL,
+lukukausi INTEGER NOT NULL,
+luentoaika TEXT NOT NULL,
 FOREIGN KEY (varausNumero) REFERENCES Varaus(varausNumero)
 ON DELETE CASCADE,
 FOREIGN KEY (kurssikoodi, opintojakso, lukukausi, luentoaika) REFERENCES Luento(kurssikoodi, opintojakso, lukukausi, luentoaika)
 );
 
 CREATE TABLE VarattuTentille (
-varausNumero INTEGER,
-kurssikoodi TEXT,
-tenttiAika TEXT,
+varausNumero INTEGER NOT NULL,
+kurssikoodi TEXT NOT NULL,
+tenttiAika TEXT NOT NULL,
 PRIMARY KEY (varausNumero, kurssikoodi, tenttiAika),
 FOREIGN KEY (varausNumero) REFERENCES Varaus(varausNumero)
 ON DELETE CASCADE,
@@ -135,9 +135,9 @@ FOREIGN KEY (kurssikoodi, tenttiAika) REFERENCES Tentti(kurssikoodi, tenttiAika)
 );
 
 CREATE TABLE VarattuHarjoitusRyhmälle (
-varausNumero INTEGER PRIMARY KEY,
-kokoontumisAika TEXT,
-harjoitusRyhmä TEXT,
+varausNumero INTEGER PRIMARY KEY NOT NULL,
+kokoontumisAika TEXT NOT NULL,
+harjoitusRyhmä TEXT NOT NULL,
 FOREIGN KEY (varausNumero) REFERENCES Varaus(varausNumero)
 ON DELETE CASCADE,
 FOREIGN KEY (kokoontumisAika, harjoitusRyhmä) REFERENCES HarjoitusAika(kokoontumisAika, harjoitusRyhmä)

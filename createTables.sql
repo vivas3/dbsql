@@ -109,8 +109,7 @@ varaustyyppi TEXT CHECK (varaustyyppi IN ('Luento','Tentti','Harjoitus')),
 alkuAika TEXT NOT NULL,
 loppuAika TEXT NOT NULL,
 saliID TEXT NOT NULL,
-FOREIGN KEY (saliID) REFERENCES Sali(saliID),
-UNIQUE(alkuAika,saliID)
+FOREIGN KEY (saliID) REFERENCES Sali(saliID)
 );
 
 CREATE TABLE VarattuLuennolle (
